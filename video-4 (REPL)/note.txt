@@ -1,0 +1,23 @@
+Jadi repl ini fitur untuk untuk melihat, mengevaluasi dan mengulang kode program di 
+dalam terminal 
+
+
+cara masuk ke REPL dengan mengetikan perintah = node
+setelah itu kamu bisa memasukan sintaks javascript
+
+
+perintah untuk membuat file lewat terminal = touch <nama-file>
+printah untuk masuk ke code editor terminal = vi <nama-file>
+setelah masuk ke code editor terminal lalu ketik i untuk mulai mengedit file
+perintah untuk keluar dari code editor vi = esc :wq enter
+perintah untuk menampilkan isi file = cat <nama-file>
+
+
+perintah .load <nama-file> = digunakan untuk membaca file javascript di repl
+perintah rm <nama-file> di terminal = untuk menghapus file javascript
+
+
+perintah .break = digunakan ketika ingin membatalkan membuat program setengah misalnya ketika tengah tengah membuat funcition tidak jadi
+
+
+perintah .editor = digunakan untuk membuat code banyak sama seperti vi tadi tapi di dalam repl
