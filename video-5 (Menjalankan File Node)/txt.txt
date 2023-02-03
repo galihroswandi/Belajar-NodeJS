@@ -1,9 +1,0 @@
-Apa yang dipelajari??
-
-1. Menjalankan 1 file javascrip
-    * perintah node <nama-file>
-2. Menjalankan 2 file javascript
-    * file pertama harus me require ke file kedua
-        --> require('path-file') = ini akan memberi akses ke file kedua
-    * di file kedua kalau harus export content yang akan di kirimkan
-        --> module.exports = {content-object} ini akan mengekspor content yang akan di kirimkan
