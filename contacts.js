@@ -1,4 +1,6 @@
 const fs = require('fs');
+const validator = require('validator');
+const chalk = require('chalk');
 
 // cek jika folder tidak ada
 const dataPath = './data';
@@ -12,52 +14,44 @@ if (!fs.existsSync(filePath)) {
     fs.writeFileSync(filePath, '[]', 'utf-8');
 }
 
-// Readline
-const readline = require('readline');
-
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-})
-
-const tulisPertanyaan = (pertanyaan) => {
-    return new Promise((resolve, reject) => {
-        rl.question(pertanyaan, (q1) => {
-            resolve(q1);
-        });
-    })
-}
 
 const simpanContact = (nama, email, noHp) => {
-
     const contact = { nama, email, noHp };
     fs.readFile('./data/contacts.json', 'utf-8', (err, file) => {
         if (err) throw err;
+        const data = JSON.parse(file);
 
-        // cek nama dan no hp sudah ada / belum
-        if (file.includes(contact.nama)) {
-            if (file.includes(contact.email)) {
-                console.log('nama dan no hp sudah ada !');
-                rl.close();
-            } else {
-                console.log('Nama sudah ada !');
-                rl.close();
-            }
-        } else if (file.includes(contact.email)) {
-            console.log('No Hp sudah terdaftar !');
-            rl.close();
-        } else {
-            const data = JSON.parse(file);
-            data.push(contact);
-
-            fs.writeFile('./data/contacts.json', JSON.stringify(data), (e) => {
-                console.log(e);
-            })
-
-            console.log('Terimakasih Sudah Memasukan Data 😉');
+        // cek duplikat
+        const duplikat = data.find(contact => contact.nama === nama);
+        if (duplikat) {
+            console.log(chalk.red.inverse.bold('Contact sudah terdaftar, gunakan nama lain!'));
+            return false;
         }
+
+        // cek email
+        if (email) {
+            if (!validator.isEmail(email)) {
+                console.log(chalk.red.inverse.bold('Email tidak valid!'));
+                return false;
+            }
+        }
+
+        // cek noHP
+        if (!validator.isMobilePhone(noHp, 'id-ID')) {
+            console.log(chalk.inverse.red.bold('No Hp tidak valid!'));
+            return false;
+        }
+
+        data.push(contact);
+
+        fs.writeFile('./data/contacts.json', JSON.stringify(data), (e) => {
+            if (e) {
+                console.log(e);
+            }
+        })
+
+        console.log('Terimakasih Sudah Memasukan Data 😉');
     })
-    rl.close();
 }
 
-module.exports = { tulisPertanyaan, simpanContact };
+module.exports = { simpanContact };
