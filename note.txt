@@ -1,6 +1,0 @@
-
-
-npm install <nama-package> => untuk menginstall package npm
-npm i <nama-package> => untuk menginstall package npm
-npm uninstall => untuk menguninstall package npm
-npm i <nama-package>@version => untuk menginstall package npm dengan versinya
