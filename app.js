@@ -1,78 +1,36 @@
-const yargs = require('yargs');
-const { simpanContact, listContact, detailContact, deleteContact } = require('./contacts');
+const http = require('http');
+const fs = require('fs');
+const port = 3000;
 
-// yargs.command('add', 'Menambahkan contact baru', () => { }, (argv) => {
-//     console.log(argv);
-// })
-
-
-yargs.command({
-    command: 'add',
-    describe: 'Menambahkan contact baru',
-    builder: {
-        nama: {
-            describe: 'Nama lengkap',
-            demandOption: true,
-            type: 'string'
-        },
-        email: {
-            describe: 'Email',
-            demandOption: false,
-            type: 'string'
-        },
-        noHP: {
-            describe: 'No Handphone',
-            demandOption: true,
-            type: 'string'
+const loadFile = (path, res) => {
+    fs.readFile(path, (err, data) => {
+        if (err) {
+            res.writeHead(404);
+            res.write('Error: file not found...');
+        } else {
+            res.write(data);
         }
-    },
-    handler(argv) {
-        simpanContact(argv.nama, argv.email, argv.noHP);
+        res.end();
+    })
+}
+
+const server = http.createServer((req, res) => {
+    const url = req.url;
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+
+    switch (url) {
+        case '/about':
+            loadFile('./about.html', res);
+            break;
+        case '/contact':
+            loadFile('./contact.html', res);
+            break;
+        default:
+            loadFile('./index.html', res);
+            break;
     }
-}).demandCommand();
+});
 
-
-// Menampilkan semua daftar kontak 
-yargs.command({
-    command: 'list',
-    describe: 'Menampilkan daftar kontak',
-    handler() {
-        listContact();
-    }
-})
-
-
-// Menampilkan daftar kontak berdasarkan nama
-yargs.command({
-    command: 'detail',
-    describe: 'Menampilkan detail kontak berdasarkan nama',
-    builder: {
-        nama: {
-            describe: 'Nama Lengkap',
-            demandOption: true,
-            type: 'string'
-        }
-    },
-    handler(argv) {
-        detailContact(argv.nama);
-    }
-})
-
-
-// menghapus kontak berdasarkan nama
-yargs.command({
-    command: 'delete',
-    describe: 'Menghapus kontak berdasarkan nama',
-    builder: {
-        nama: {
-            describe: 'Nama Lengkap',
-            demandOption: true,
-            type: 'string'
-        }
-    },
-    handler(argv) {
-        deleteContact(argv.nama);
-    }
-})
-
-yargs.parse();
+server.listen(port, () => {
+    console.log('Server is listening on port 3000...');
+});
