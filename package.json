@@ -1,0 +1,25 @@
+{
+  "name": "belajar-nodejs",
+  "version": "1.0.0",
+  "description": "Belajar Node JS",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/galihroswandi/Belajar-NodeJS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/galihroswandi/Belajar-NodeJS/issues"
+  },
+  "homepage": "https://github.com/galihroswandi/Belajar-NodeJS#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20"
+  }
+}
