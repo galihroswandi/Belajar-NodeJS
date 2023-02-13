@@ -1,27 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
+<h1>Halaman Index</h1>
+<p>Welcome to site...</p>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NodeJS Web Server</title>
-</head>
+<h2>Hallo, <%= nama %>
+</h2>
 
-<body>
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/about">About</a></li>
-            <li><a href="/Contact">Contact</a></li>
-        </ul>
-    </nav>
-    <h1>Halaman Index</h1>
-    <p>Welcome to site...</p>
-
-    <% const nama='Galih Roswandi' %>
-        <h2>Hallo, <%= nama %>
-        </h2>
-</body>
-
-</html>
+<h3>Daftar Mahasiswa</h3>
+<% if (mahasiswa.length < 1) { %>
+    <p>Mahasiswa masih kosong...</p>
+    <% }else{ %>
+        <% mahasiswa.forEach(mhs=> { %>
+            <ul>
+                <li>Nama: <%= mhs.nama %>
+                </li>
+                <li>Email: <%= mhs.email %>
+                </li>
+            </ul>
+            <% }) %>
+                <% } %>
