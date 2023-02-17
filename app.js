@@ -1,11 +1,23 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
+const morgan = require('morgan');
 const app = express();
 const port = 3000;
 
 app.set('view engine', 'ejs');
 
+// Third-party middleware
 app.use(expressLayouts);
+app.use(morgan('dev'));
+
+// Built in middleware
+app.use(express.static('public'));
+
+// Application Level Middleware
+app.use((req, res, next) => {
+    console.log('Time', Date.now());
+    next();
+})
 
 app.get('/', (req, res) => {
     res.status(200);
@@ -33,7 +45,7 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/about', (req, res) => {
+app.get('/about', (req, res,) => {
     res.render('about', {
         layout: 'layouts/main-layout',
         title: 'Express | About'
@@ -53,7 +65,8 @@ app.get('/product/:id', (req, res) => {
 
 app.use('/', (req, res) => {
     res.status(404);
-    res.send('Error: file not found');
+    res.write('<h1>404</h1>');
+    res.end();
 })
 
 app.listen(port, () => {
