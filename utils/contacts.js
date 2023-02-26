@@ -24,4 +24,22 @@ const findContact = (nama) => {
     return contact;
 }
 
-module.exports = { loadContact, findContact };
+// function untuk menyimpan / menimpa data
+const saveContacts = (contacts) => {
+    fs.writeFileSync('./data/contacts.json', JSON.stringify(contacts));
+}
+
+// manambahkan data contact baru
+const addContact = (contact) => {
+    const contacts = loadContact();
+    contacts.push(contact);
+    saveContacts(contacts);
+}
+
+// cek duplikat
+const cekDuplikat = (nama) => {
+    const contacts = loadContact();
+    return contacts.find(contact => contact === nama);
+}
+
+module.exports = { loadContact, findContact, addContact, cekDuplikat };
