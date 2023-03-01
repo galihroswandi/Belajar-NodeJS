@@ -19,7 +19,9 @@
                             <p class="card-text">
                                 <%= contact.email %>
                             </p>
-                            <a href="/contact" class="card-link">&laquo; Kembali ke daftar kontak.</a>
+                            <a href="/contact/update/<%= contact.nama %>" class="btn btn-info badge">ubah</a>
+                            <a onclick="return confirm('Apakah anda yakin ingin menghapus ?')" href="/contact/delete/<%= contact.nama %>" class="btn btn-danger badge">hapus</a>
+                            <a href="/contact" class="card-link d-block mt-3">&laquo; Kembali ke daftar kontak.</a>
                         </div>
                     </div>
                     <% } %>

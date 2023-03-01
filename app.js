@@ -1,7 +1,7 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const { validationResult, body, check } = require('express-validator');
-const { loadContact, findContact, addContact } = require('./utils/contacts');
+const { loadContact, findContact, addContact, deleteContact, updateContact } = require('./utils/contacts');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
@@ -109,6 +109,51 @@ app.post(
         }
     })
 
+    
+// proses hapus contact
+app.get('/contact/delete/:nama', (req, res) => {
+    const contact = findContact(req.params.nama);
+    if(!contact){
+        res.status(404);
+        res.send('<h1>404</h1>');
+    }else{
+        deleteContact(req.params.nama);
+        req.flash('msg', 'Data berhasil dihapus !');
+        res.redirect('/contact');
+    }
+})
+
+// proses ubah contact
+app.post(
+    '/contact/update',
+    body('nama').custom((value, {req}) => {
+        const duplikat = findContact(value);
+        if (value !== req.body.oldNama && duplikat) {
+            throw new Error("Nama sudah digunakan!");
+        }
+        return true;
+    }),
+    check('email', 'Email tidak valid!').isEmail(),
+    check('nohp', 'No Hp Tidak valid!').isMobilePhone('id-ID'),
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // return res.status(400).json({ errors: errors.array() });
+            res.render('edit-contact', {
+                title: "Express | Edit-Contact",
+                layout: "layouts/main-layout",
+                errors: errors.array(),
+                contact: req.body,
+            })
+        } else {
+            updateContact(req.body);
+
+            // kirimkan pesan ke halaman
+            req.flash('msg', 'Data berhasil ditambahkan !');
+            res.redirect('/contact');
+        }
+    })
+
 // halaman detail contact
 app.get('/contact/:nama', (req, res) => {
     const contact = findContact(req.params.nama);
@@ -117,6 +162,16 @@ app.get('/contact/:nama', (req, res) => {
         title: 'Express | Contact',
         contact,
     });
+});
+
+// halaman ubah contact
+app.get('/contact/update/:nama', (req, res) => {
+    const contact = findContact(req.params.nama);
+    res.render('edit-contact',{
+        layout: 'layouts/main-layout',
+        title: 'Express | Ubah contact',
+        contact,
+    })
 })
 
 app.get('/product/:id', (req, res) => {
