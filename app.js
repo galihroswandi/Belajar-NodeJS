@@ -1,134 +1,118 @@
-const express = require('express');
-const expressLayouts = require('express-ejs-layouts');
-const { validationResult, body, check } = require('express-validator');
-const { loadContact, findContact, addContact } = require('./utils/contacts');
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const flash = require('connect-flash');
-
-const app = express();
-const port = 3000;
-
-app.set('view engine', 'ejs');
-
-// Third-party middleware
-app.use(expressLayouts);
-
-// Built in middleware
-app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));
+const { MongoClient, ObjectId } = require('mongodb');
 
 
-// konfigurasi flash
-app.use(cookieParser('secret'));
-app.use(session({
-    cookie: { maxAge: 6000 },
-    secret: 'secret',
-    resave: true,
-    saveUninitialized: true
-}));
-app.use(flash());
+const uri = 'mongodb://127.0.0.1:27017';
+const dbName = 'siswa';
+
+const client = new MongoClient(uri);
+
+client.connect().then(() => {
+
+    // pilih database
+    const db = client.db(dbName);
 
 
-app.get('/', (req, res) => {
-    res.status(200);
+    // menambahkan 1 data mahasiswa
+    // db.collection('siswa').insertOne(
+    //     {
+    //         nama: "Erika",
+    //         email: "erika@gmail.com"
+    //     }
+    // ).then(res => {
+    //     console.log(`Data ${res.insertedId} berhasil ditambahkan !`);
+    // }).catch(err => {
+    //     console.log('Data gagal ditambahkan !');
+    // })
 
-    const mahasiswa = [
+
+    // manambahkan lebih dari 1 data
+    // db.collection('siswa').insertMany(
+    //     [
+    //         {
+    //             nama: "Erik",
+    //             email: "erik@yahoo.com"
+    //         },
+    //         {
+    //             nama: "avip",
+    //             email: "avip@gmail.com"
+    //         }
+    //     ]
+    // ).then(res => {
+    //     console.log(res);
+    // }).catch(err => {
+    //     console.log(err);
+    // })
+
+
+    // manampilkan semua data yang ada di collections siswa
+    // db.collection('siswa')
+    //     .find()
+    //     .toArray()
+    //     .then(res => {
+    //         console.log(res);
+    //     });
+
+
+    // manampilkan data berdasarkan kriteria
+    // db.collection('siswa').find({ _id: new ObjectId("640c11d567aa0818aa01e661") }).toArray().then(res => {
+    //     console.log(res);
+    // });
+
+
+    // mengubah data berdasarkan id
+    // db.collection('siswa').updateOne(
+    //     {
+    //         _id: new ObjectId("640c11d567aa0818aa01e660"),
+    //     },
+    //     {
+    //         $set: {
+    //             email: "erikPermana@gmail.com"
+    //         }
+    //     }
+    // ).then(res => {
+    //     console.log(res);
+    // }).catch(error => {
+    //     console.log(error);
+    // })
+
+
+    // mengubah data lebih dari satu berdasarkan id
+    // db.collection('siswa').updateMany(
+    //     {
+    //         nama: "Erik"
+    //     },
+    //     {
+    //         $set: {
+    //             nama: "Erik Cuakss"
+    //         }
+    //     }
+    // ).then(res => {
+    //     console.log(res);
+    // }).catch(err => {
+    //     console.log(err);
+    // })
+
+
+    // menghapus 1 data
+    // db.collection('siswa').deleteOne(
+    //     {
+    //         _id: new ObjectId("640c1cdf145138a69fbf6ff2")
+    //     }
+    // ).then(res => {
+    //     console.log(res);
+    // }).catch(err => {
+    //     console.log(err);
+    // })
+
+
+    // menghapus lebih dari 1 data
+    db.collection('siswa').deleteMany(
         {
-            nama: 'Galih Roswandi',
-            email: 'galihroswandi12@gmail.com'
-        },
-        {
-            nama: 'Otong Surotong',
-            email: 'otong01@gmail.com'
-        },
-        {
-            nama: 'Ucup Markucup',
-            email: 'ucup11@gmail.com'
-        },
-    ]
-
-    res.render('index', {
-        layout: 'layouts/main-layout',
-        nama: 'Galih Roswandi',
-        title: 'Halaman Home',
-        mahasiswa
-    });
-});
-
-app.get('/about', (req, res,) => {
-    res.render('about', {
-        layout: 'layouts/main-layout',
-        title: 'Express | About'
-    });
-})
-
-app.get('/contact', (req, res) => {
-    const contacts = loadContact();
-    res.render('contact', {
-        layout: 'layouts/main-layout',
-        title: 'Express | Contact',
-        contacts,
-        msg: req.flash('msg'),
-    });
-});
-
-// halaman tambah contact
-app.get('/contact/add', (req, res) => {
-    res.render('add-contact', {
-        layout: 'layouts/main-layout',
-        title: 'Express | Add-Contact',
-    });
-});
-
-// proses tambah contact
-app.post(
-    '/contact',
-    body('nama').custom(value => {
-        const cek = findContact(value);
-        if (cek) {
-            throw new Error("Nama sudah digunakan!");
+            nama: "Erik Cuakss",
         }
-        return true;
-    }),
-    check('email', 'Email tidak valid!').isEmail(),
-    check('nohp', 'No Hp Tidak valid!').isMobilePhone('id-ID'),
-    (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            // return res.status(400).json({ errors: errors.array() });
-            res.render('add-contact', {
-                title: "Express | Add-Contact",
-                layout: "layouts/main-layout",
-                errors: errors.array(),
-            })
-        } else {
-            addContact(req.body);
-            req.flash('msg', 'Data berhasil ditambahkan !');
-            res.redirect('/contact');
-        }
+    ).then(res => {
+        console.log(res);
+    }).catch(err => {
+        console.log(err);
     })
-
-// halaman detail contact
-app.get('/contact/:nama', (req, res) => {
-    const contact = findContact(req.params.nama);
-    res.render('detail', {
-        layout: 'layouts/main-layout',
-        title: 'Express | Contact',
-        contact,
-    });
-})
-
-app.get('/product/:id', (req, res) => {
-    res.send(`Product ID: ${req.params.id} <br> Categori Id: ${req.query.category}`);
-})
-
-app.use('/', (req, res) => {
-    res.status(404);
-    res.write('<h1>404</h1>');
-    res.end();
-})
-
-app.listen(port, () => {
-    console.log(`Server listening on http://localhost:${port}/`);
 })
