@@ -1,117 +1,91 @@
-const { MongoClient, ObjectId } = require('mongodb');
+const express = require('express');
+const expressLayouts = require('express-ejs-layouts');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const flash = require('connect-flash');
 
-const uri = 'mongodb://127.0.0.1:27017';
-const dbName = 'siswa';
+const app = express();
+const port = 3000; 
 
-const client = new MongoClient(uri);
+require('./utils/db');
+const Contact = require('./models/contact');
 
-client.connect().then(() => {
+// Setup EJS
+app.set('view engine', 'ejs');
+app.use(expressLayouts);
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
 
-    // pilih database
-    const db = client.db(dbName);
+// konfigurasi flash
+app.use(cookieParser('secret'));
+app.use(session({
+    cookie: { maxAge: 6000 },
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(flash());
 
+// Halaman Home
+app.get('/', (req, res) => {
+    res.status(200);
 
-    // menambahkan 1 data mahasiswa
-    // db.collection('siswa').insertOne(
-    //     {
-    //         nama: "Erika",
-    //         email: "erika@gmail.com"
-    //     }
-    // ).then(res => {
-    //     console.log(`Data ${res.insertedId} berhasil ditambahkan !`);
-    // }).catch(err => {
-    //     console.log('Data gagal ditambahkan !');
-    // })
-
-
-    // manambahkan lebih dari 1 data
-    // db.collection('siswa').insertMany(
-    //     [
-    //         {
-    //             nama: "Erik",
-    //             email: "erik@yahoo.com"
-    //         },
-    //         {
-    //             nama: "avip",
-    //             email: "avip@gmail.com"
-    //         }
-    //     ]
-    // ).then(res => {
-    //     console.log(res);
-    // }).catch(err => {
-    //     console.log(err);
-    // })
-
-
-    // manampilkan semua data yang ada di collections siswa
-    // db.collection('siswa')
-    //     .find()
-    //     .toArray()
-    //     .then(res => {
-    //         console.log(res);
-    //     });
-
-
-    // manampilkan data berdasarkan kriteria
-    // db.collection('siswa').find({ _id: new ObjectId("640c11d567aa0818aa01e661") }).toArray().then(res => {
-    //     console.log(res);
-    // });
-
-
-    // mengubah data berdasarkan id
-    // db.collection('siswa').updateOne(
-    //     {
-    //         _id: new ObjectId("640c11d567aa0818aa01e660"),
-    //     },
-    //     {
-    //         $set: {
-    //             email: "erikPermana@gmail.com"
-    //         }
-    //     }
-    // ).then(res => {
-    //     console.log(res);
-    // }).catch(error => {
-    //     console.log(error);
-    // })
-
-
-    // mengubah data lebih dari satu berdasarkan id
-    // db.collection('siswa').updateMany(
-    //     {
-    //         nama: "Erik"
-    //     },
-    //     {
-    //         $set: {
-    //             nama: "Erik Cuakss"
-    //         }
-    //     }
-    // ).then(res => {
-    //     console.log(res);
-    // }).catch(err => {
-    //     console.log(err);
-    // })
-
-
-    // menghapus 1 data
-    // db.collection('siswa').deleteOne(
-    //     {
-    //         _id: new ObjectId("640c1cdf145138a69fbf6ff2")
-    //     }
-    // ).then(res => {
-    //     console.log(res);
-    // }).catch(err => {
-    //     console.log(err);
-    // })
-
-
-    // menghapus lebih dari 1 data
-    db.collection('siswa').deleteMany(
+    const mahasiswa = [
         {
-            nama: "Erik Cuakss",
-        }
-    ).then(res => {
-        console.log(res);
-    }).catch(err => {
-        console.log(err);
-    })
+            nama: 'Galih Roswandi',
+            email: 'galihroswandi12@gmail.com'
+        },
+        {
+            nama: 'Otong Surotong',
+            email: 'otong01@gmail.com'
+        },
+        {
+            nama: 'Ucup Markucup',
+            email: 'ucup11@gmail.com'
+        },
+    ]
+
+    res.render('index', {
+        layout: 'layouts/main-layout',
+        nama: 'Galih Roswandi',
+        title: 'Halaman Home',
+        mahasiswa
+    });
+});
+
+
+// Halaman About
+app.get('/about', (req, res,) => {
+    res.render('about', {
+        layout: 'layouts/main-layout',
+        title: 'Express | About'
+    });
+})
+
+
+// Halaman Contact
+app.get('/contact', async (req, res) => {
+
+    const contacts = await Contact.find();
+    res.render('contact', {
+        layout: 'layouts/main-layout',
+        title: 'Express | Contact',
+        contacts,
+        msg: req.flash('msg'),
+    });
+});
+
+
+// halaman detail contact
+app.get('/contact/:nama', async (req, res) => {
+    const contact = await Contact.findOne({ nama: req.params.nama});
+    res.render('detail', {
+        layout: 'layouts/main-layout',
+        title: 'Express | Contact',
+        contact,
+    });
+});
+
+app.listen(port, () => {
+    console.log(`Mongo Contact App | listening at http://localhost:${port}`);
 })
